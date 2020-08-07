@@ -7,7 +7,7 @@
 
 import os
 import hashlib
-import urlparse
+import urllib.parse
 
 debug = False
 gzip = True
@@ -15,8 +15,8 @@ bind = '0.0.0.0'
 port = int(os.getenv('PORT', 8923))
 https = bool(os.getenv('ENABLE_HTTPS', False))
 cookie_days = 5
-mysql_url = urlparse.urlparse(os.getenv('JAWSDB_MARIA_URL', ''))
-redis_url = urlparse.urlparse(os.getenv('REDISCLOUD_URL', ''))
+mysql_url = urllib.parse.urlparse(os.getenv('JAWSDB_MARIA_URL', ''))
+redis_url = urllib.parse.urlparse(os.getenv('REDISCLOUD_URL', ''))
 
 class mysql(object):
     host = mysql_url.hostname or 'localhost'

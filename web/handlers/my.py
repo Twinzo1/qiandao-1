@@ -6,18 +6,18 @@
 # Created on 2014-08-08 21:06:02
 
 import time
-from base import *
+from .base import *
 
 def my_status(task):
     if task['disabled']:
-        return u'停止'
+        return '停止'
     if task['last_failed_count']:
-        return u'已失败%d次，重试中...' % task['last_failed_count']
+        return '已失败%d次，重试中...' % task['last_failed_count']
     if task['last_failed'] > task['last_success']:
-        return u'失败'
+        return '失败'
     if task['success_count'] == 0 and task['failed_count'] == 0 and task['next'] and (task['next'] - time.time() < 60):
-        return u'正在准备为您签到'
-    return u'正常'
+        return '正在准备为您签到'
+    return '正常'
 
 class MyHandler(BaseHandler):
     @tornado.web.addslash

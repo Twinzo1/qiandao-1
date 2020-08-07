@@ -72,10 +72,10 @@ def format_date(date, gmt_offset=-8*60, relative=True, shorter=False, full_forma
     local_yesterday = local_now - datetime.timedelta(hours=24)
     local_tomorrow = local_now + datetime.timedelta(hours=24)
     if date > now:
-        later = u"后"
+        later = "后"
         date, now = now, date
     else:
-        later = u"前"
+        later = "前"
     difference = now - date
     seconds = difference.seconds
     days = difference.days
@@ -84,23 +84,23 @@ def format_date(date, gmt_offset=-8*60, relative=True, shorter=False, full_forma
     if not full_format:
         if relative and days == 0:
             if seconds < 50:
-                return u"%(seconds)d 秒" % {"seconds": seconds} + later
+                return "%(seconds)d 秒" % {"seconds": seconds} + later
 
             if seconds < 50 * 60:
                 minutes = round(seconds / 60.0)
-                return u"%(minutes)d 分钟" % {"minutes": minutes} + later
+                return "%(minutes)d 分钟" % {"minutes": minutes} + later
 
             hours = round(seconds / (60.0 * 60))
-            return u"%(hours)d 小时" % {"hours": hours} + later
+            return "%(hours)d 小时" % {"hours": hours} + later
 
         if days == 0:
             format = "%(time)s"
         elif days == 1 and local_date.day == local_yesterday.day and \
-                relative and later == u'前':
-            format = u"昨天" if shorter else u"昨天 %(time)s"
+                relative and later == '前':
+            format = "昨天" if shorter else "昨天 %(time)s"
         elif days == 1 and local_date.day == local_tomorrow.day and \
-                relative and later == u'后':
-            format = u"明天" if shorter else u"明天 %(time)s"
+                relative and later == '后':
+            format = "明天" if shorter else "明天 %(time)s"
         #elif days < 5:
             #format = "%(weekday)s" if shorter else "%(weekday)s %(time)s"
         elif days < 334:  # 11mo, since confusing for same month last year
@@ -123,16 +123,16 @@ def format_date(date, gmt_offset=-8*60, relative=True, shorter=False, full_forma
 
 
 def utf8(string):
-    if isinstance(string, unicode):
+    if isinstance(string, str):
         return string.encode('utf8')
     return string
 
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import config
 from tornado import httpclient
 
 
-def send_mail(to, subject, text=None, html=None, async=False, _from=u"签到提醒 <noreply@%s>" % config.mail_domain):
+def send_mail(to, subject, text=None, html=None, async=False, _from="签到提醒 <noreply@%s>" % config.mail_domain):
     if not config.mailgun_key:
         subtype = 'html' if html else 'plain'
         return _send_mail(to, subject, html or text or '', subtype)
@@ -161,7 +161,7 @@ def send_mail(to, subject, text=None, html=None, async=False, _from=u"签到提�
         url="https://api.mailgun.net/v2/%s/messages" % config.mail_domain,
         auth_username="api",
         auth_password=config.mailgun_key,
-        body=urllib.urlencode(body)
+        body=urllib.parse.urlencode(body)
     )
     return client.fetch(req)
 
@@ -201,7 +201,7 @@ from requests.utils import get_encoding_from_headers, get_encodings_from_content
 
 def find_encoding(content, headers=None):
     # content is unicode
-    if isinstance(content, unicode):
+    if isinstance(content, str):
         return 'unicode'
 
     encoding = None
@@ -239,7 +239,7 @@ def decode(content, headers=None):
 
 
 def quote_chinese(url, encodeing="utf-8"):
-    if isinstance(url, unicode):
+    if isinstance(url, str):
         return quote_chinese(url.encode("utf-8"))
     res = [b if ord(b) < 128 else '%%%02X' % (ord(b)) for b in url]
     return "".join(res)

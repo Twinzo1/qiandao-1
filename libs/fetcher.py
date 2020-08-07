@@ -8,10 +8,10 @@
 import re
 import json
 import random
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import base64
 import logging
-import urlparse
+import urllib.parse
 from datetime import datetime
 
 try:
@@ -128,7 +128,7 @@ class Fetcher(object):
             return result
 
         def build_request(request):
-            url = urlparse.urlparse(request.url)
+            url = urllib.parse.urlparse(request.url)
             ret = dict(
                     method = request.method,
                     url = request.url,
@@ -136,10 +136,10 @@ class Fetcher(object):
                     headers = build_headers(request.headers),
                     queryString = [
                         {'name': n, 'value': v} for n, v in\
-                                urlparse.parse_qsl(url.query)],
+                                urllib.parse.parse_qsl(url.query)],
                     cookies = [
                         {'name': n, 'value': v} for n, v in \
-                                urlparse.parse_qsl(request.headers.get('cookie', ''))],
+                                urllib.parse.parse_qsl(request.headers.get('cookie', ''))],
                     headersSize = -1,
                     bodySize = len(request.body) if request.body else 0,
                     )
@@ -151,7 +151,7 @@ class Fetcher(object):
                 if ret['postData']['mimeType'] == 'application/x-www-form-urlencoded':
                     ret['postData']['params'] = [
                             {'name': n, 'value': v} for n, v in \
-                                urlparse.parse_qsl(request.body)]
+                                urllib.parse.parse_qsl(request.body)]
                     try:
                         _ = json.dumps(ret['postData']['params'])
                     except UnicodeDecodeError:
@@ -215,7 +215,7 @@ class Fetcher(object):
                 _from = _from[7:]
                 return response.headers.get(_from, '')
             elif _from == 'header':
-                return unicode(response.headers)
+                return str(response.headers)
             else:
                 return ''
 
@@ -270,7 +270,7 @@ class Fetcher(object):
     @staticmethod
     def tpl2har(tpl):
         def build_request(en):
-            url = urlparse.urlparse(en['request']['url'])
+            url = urllib.parse.urlparse(en['request']['url'])
             request = dict(
                     method = en['request']['method'],
                     url = en['request']['url'],
@@ -280,7 +280,7 @@ class Fetcher(object):
                                 en['request'].get('headers', [])],
                     queryString = [
                         {'name': n, 'value': v} for n, v in\
-                                urlparse.parse_qsl(url.query)],
+                                urllib.parse.parse_qsl(url.query)],
                     cookies = [
                         {'name': x['name'], 'value': x['value'], 'checked': True} for x in\
                                 en['request'].get('cookies', [])],
@@ -296,7 +296,7 @@ class Fetcher(object):
                         )
                 if en['request'].get('mimeType') == 'application/x-www-form-urlencoded':
                     params = [{'name': x[0], 'value': x[1]} \
-                        for x in urlparse.parse_qsl(en['request']['data'], True)]
+                        for x in urllib.parse.parse_qsl(en['request']['data'], True)]
                     request['postData']['params'] = params
             return request
 
