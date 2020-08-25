@@ -6,7 +6,8 @@
 # Created on 2012-09-12 22:39:57
 # form requests&tornado
 
-import collections
+import abc
+from collections import MutableMapping as DictMixin
 from http import cookiejar
 from urllib.parse import urlparse
 from tornado import httpclient, httputil
@@ -137,8 +138,8 @@ def remove_cookie_by_name(cookiejar, name, domain=None, path=None):
 
     for domain, path, name in clearables:
         cookiejar.clear(domain, path, name)
-        
-class CookieSession(cookiejar.CookieJar, collections.MutableMapping ):
+   
+class CookieSession(cookiejar.CookieJar, DictMixin):
     def extract_cookies_to_jar(self, request, response):
         """Extract the cookies from the response into a CookieJar.
 
@@ -151,7 +152,7 @@ class CookieSession(cookiejar.CookieJar, collections.MutableMapping ):
         # pull out the HTTPMessage with the headers and put it in the mock:
         headers = response
         if not hasattr(headers, "keys"):
-            headers = headers.headers
+            headers = headers.headers # 不能获取正确的headers，或许与 DictMixin 变为 MutableMapping有关
         headers.getheaders = headers.get_list
         res = MockResponse(headers)
         self.extract_cookies(res, req)

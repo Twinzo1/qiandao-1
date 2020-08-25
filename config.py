@@ -11,12 +11,12 @@ import urllib.parse
 
 debug = False
 gzip = True
-bind = '0.0.0.0'
+bind = '10.0.0.242'
 port = int(os.getenv('PORT', 8923))
 https = bool(os.getenv('ENABLE_HTTPS', False))
 cookie_days = 5
-mysql_url = urllib.parse.urlparse(os.getenv('JAWSDB_MARIA_URL', ''))
-redis_url = urllib.parse.urlparse(os.getenv('REDISCLOUD_URL', ''))
+mysql_url = urllib.parse.urlparse(os.getenv('JAWSDB_MARIA_URL', '').encode("utf8"))
+redis_url = urllib.parse.urlparse(os.getenv('REDISCLOUD_URL', '').encode("utf8"))
 
 class mysql(object):
     host = mysql_url.hostname or 'localhost'
@@ -40,8 +40,8 @@ class redis(object):
 evil = 100
 
 pbkdf2_iterations = 400
-aes_key = hashlib.sha256(os.getenv('AES_KEY', 'binux')).digest()
-cookie_secret = hashlib.sha256(os.getenv('COOKIE_SECRET', 'binux')).digest()
+aes_key = hashlib.sha256(os.getenv('AES_KEY', 'binux').encode("utf8")).digest()
+cookie_secret = hashlib.sha256(os.getenv('COOKIE_SECRET', 'binux').encode("utf8")).digest()
 check_task_loop = 10000
 download_size_limit = 1*1024*1024
 proxies = []
